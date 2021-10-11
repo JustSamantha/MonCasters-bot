@@ -122,4 +122,4 @@ dist
 # CUSTOM IGNORE
 
 # Our Secrets
-./config/secret.json
+config/secret.json
