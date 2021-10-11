@@ -1,0 +1,29 @@
+{
+  "name": "habitica-bot",
+  "version": "0.1.0",
+  "description": "Habitica bot for the MonCasters Discord server.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "eslint": "eslint .",
+    "eslint:fix": "eslint . --fix"
+  },
+  "keywords": [
+    "habitica",
+    "discord",
+    "bot"
+  ],
+  "author": "Sam",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/builders": "^0.6.0",
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "discord-api-types": "^0.23.1",
+    "discord.js": "^13.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.24.2"
+  }
+}
