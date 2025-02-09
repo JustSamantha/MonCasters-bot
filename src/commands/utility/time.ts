@@ -2,9 +2,9 @@ import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('ping')
-		.setDescription('Replies with Pong!'),
+		.setName('time')
+		.setDescription('Replies with the current time'),
 	async execute(interaction: ChatInputCommandInteraction) {
-		await interaction.reply('Pong!');
+		await interaction.reply(Date());
 	},
 };

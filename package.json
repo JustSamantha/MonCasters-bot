@@ -3,14 +3,7 @@
   "version": "0.1.0",
   "description": "Habitica bot for the MonCasters Discord server.",
   "main": "index.js",
-  "scripts": {
-    "start": "npx ts-node src/index.ts",
-    "start:dev": "npx ts-node-dev src/index.ts",
-    "start:prod": "node dist/index.js",
-    "dev": "npx nodemon ./src/index.ts",
-    "build": "npx tsc",
-    "watch": "npx tsc -w"
-  },
+  "scripts": {},
   "keywords": [
     "habitica",
     "discord",
@@ -22,12 +15,10 @@
     "npm": ">=11 <12",
     "node": ">=22 <23"
   },
-  "devDependencies": {
-    "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
-  },
   "dependencies": {
-    "discord.js": "^14.17.3",
-    "nodemon": "^3.1.9"
+    "discord.js": "^14.17.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
   }
 }
