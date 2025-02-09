@@ -1,9 +1,15 @@
-import { Interaction, Client, Collection, Events, GatewayIntentBits, MessageFlags } from 'discord.js';
-import * as fs from "fs";
-import * as path from "path";
-import config from './modules/configuration';
+import fs from 'node:fs';
+import path from 'node:path';
+import { Client, Collection, Events, GatewayIntentBits, MessageFlags } from 'discord.js';
+import { token } from '../config.json';
 
-const client:any = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client:any = new Client({ intents: [
+  GatewayIntentBits.Guilds,
+	GatewayIntentBits.GuildMessages,
+	GatewayIntentBits.MessageContent,
+	GatewayIntentBits.GuildMessageTyping,
+	GatewayIntentBits.GuildPresences,
+] });
 
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
@@ -25,15 +31,15 @@ for (const folder of commandFolders) {
 
 client.once(Events.ClientReady, (readyClient:any) => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-  const channel: any = client.channels.cache.get('1239320263108329514');
+  const channel = client.channels.cache.get('1239320263108329514');
   if (channel) {
     channel.send('MonCasters bot ready!');
-    channel.send('Hello world!');
-  }
+  } else {
+		console.error('Channel is not defined, can not send welcome message.');
+	}
 });
 
 client.on(Events.InteractionCreate, async (interaction:any) => {
-  console.log('Receivin an interaction: ', interaction);
 	if (!interaction.isChatInputCommand()) return;
 	const command = interaction.client.commands.get(interaction.commandName);
 
@@ -54,4 +60,4 @@ client.on(Events.InteractionCreate, async (interaction:any) => {
 	}
 });
 
-client.login(config.discordApi.token);
+client.login(token);

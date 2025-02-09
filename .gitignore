@@ -123,3 +123,4 @@ dist
 
 # Our Secrets
 config/secret.json
+config.json
