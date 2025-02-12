@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { ChatInputCommandInteraction, Client, Collection, CommandInteraction, Events, GatewayIntentBits, MessageFlags, SlashCommandBuilder, TextChannel } from 'discord.js';
+import { CacheType, ChatInputCommandInteraction, Client, Collection, CommandInteraction, Events, GatewayIntentBits, Interaction, MessageFlags, SlashCommandBuilder, TextChannel } from 'discord.js';
 import { token } from '../config.json';
 
 interface Command {
@@ -8,7 +8,7 @@ interface Command {
 	execute(interaction: ChatInputCommandInteraction): ChatInputCommandInteraction;
 }
 
-let client:any = new Client({ intents: [
+let client:Client = new Client({ intents: [
   GatewayIntentBits.Guilds,
 	GatewayIntentBits.GuildMessages,
 	GatewayIntentBits.MessageContent,
@@ -22,7 +22,7 @@ const commandFolders:string[] = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
 	const commandsPath:string = path.join(foldersPath, folder);
-	const commandFiles:string[] = fs.readdirSync(commandsPath).filter((file:any) => file.endsWith('.js'));
+	const commandFiles:string[] = fs.readdirSync(commandsPath).filter((file:string) => file.endsWith('.js'));
 	for (const file of commandFiles) {
 		const filePath:string = path.join(commandsPath, file);
 		const command:Command = require(filePath);
@@ -34,7 +34,8 @@ for (const folder of commandFolders) {
 	}
 }
 
-client.once(Events.ClientReady, (readyClient:any) => {
+client.once(Events.ClientReady, (readyClient:Client) => {
+	if (!readyClient || !readyClient.user) throw 'Client is ready but object is not defined';
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
   const channel:TextChannel = client.channels.cache.get('1239320263108329514') as TextChannel;
   if (channel) {
@@ -44,7 +45,7 @@ client.once(Events.ClientReady, (readyClient:any) => {
 	}
 });
 
-client.on(Events.InteractionCreate, async (interaction:ChatInputCommandInteraction) => {
+client.on(Events.InteractionCreate, async (interaction:Interaction<CacheType>) => {
 	console.info('Receiving interaction: ', interaction);
 	if (!interaction.isChatInputCommand()) return;
 	const command:Command | undefined = commandsCollection.get(interaction.commandName);
