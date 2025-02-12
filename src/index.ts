@@ -1,9 +1,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { Client, Collection, Events, GatewayIntentBits, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, Client, Collection, CommandInteraction, Events, GatewayIntentBits, MessageFlags, SlashCommandBuilder, TextChannel } from 'discord.js';
 import { token } from '../config.json';
 
-const client:any = new Client({ intents: [
+interface Command {
+	data: SlashCommandBuilder;
+	execute(interaction: ChatInputCommandInteraction): ChatInputCommandInteraction;
+}
+
+let client:any = new Client({ intents: [
   GatewayIntentBits.Guilds,
 	GatewayIntentBits.GuildMessages,
 	GatewayIntentBits.MessageContent,
@@ -11,18 +16,18 @@ const client:any = new Client({ intents: [
 	GatewayIntentBits.GuildPresences,
 ] });
 
-client.commands = new Collection();
-const foldersPath = path.join(__dirname, 'commands');
-const commandFolders = fs.readdirSync(foldersPath);
+const commandsCollection:Collection<string, Command> = new Collection();
+const foldersPath:string = path.join(__dirname, 'commands');
+const commandFolders:string[] = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
-	const commandsPath = path.join(foldersPath, folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter((file:any) => file.endsWith('.js'));
+	const commandsPath:string = path.join(foldersPath, folder);
+	const commandFiles:string[] = fs.readdirSync(commandsPath).filter((file:any) => file.endsWith('.js'));
 	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file);
-		const command = require(filePath);
+		const filePath:string = path.join(commandsPath, file);
+		const command:Command = require(filePath);
 		if ('data' in command && 'execute' in command) {
-			client.commands.set(command.data.name, command);
+			commandsCollection.set(command.data.name, command);
 		} else {
 			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
 		}
@@ -31,7 +36,7 @@ for (const folder of commandFolders) {
 
 client.once(Events.ClientReady, (readyClient:any) => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-  const channel = client.channels.cache.get('1239320263108329514');
+  const channel:TextChannel = client.channels.cache.get('1239320263108329514') as TextChannel;
   if (channel) {
     channel.send('MonCasters bot ready!');
   } else {
@@ -39,9 +44,10 @@ client.once(Events.ClientReady, (readyClient:any) => {
 	}
 });
 
-client.on(Events.InteractionCreate, async (interaction:any) => {
+client.on(Events.InteractionCreate, async (interaction:ChatInputCommandInteraction) => {
+	console.info('Receiving interaction: ', interaction);
 	if (!interaction.isChatInputCommand()) return;
-	const command = interaction.client.commands.get(interaction.commandName);
+	const command:Command | undefined = commandsCollection.get(interaction.commandName);
 
 	if (!command) {
 		console.error(`No command matching ${interaction.commandName} was found.`);
